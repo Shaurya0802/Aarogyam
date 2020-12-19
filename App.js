@@ -1,21 +1,46 @@
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { createAppContainer, createSwitchNavigator } from 'react-navigation'
+import { AppLoading } from 'expo';
+import { AppDrawerNavigator } from './components/AppDrawerNavigator';
+import { AppTabNavigator } from './components/AppTabNavigator';
+import LoginScreen from './screens/LoginScreen';
+import * as Font from 'expo-font';
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+export default class App extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      isFontLoaded: false
+    }
+  }
+
+  async componentDidMount() {
+    await Font.loadAsync({
+      'SemiBold' : require('./fonts/Montserrat-SemiBold.otf'),
+      'Medium' : require('./fonts/Montserrat-Medium.otf'),
+      'Regular' : require('./fonts/Montserrat-Regular.otf')
+    });
+
+    this.setState({
+      isFontLoaded: true
+    })
+  }
+
+  render() {
+    return (
+      (this.state.isFontLoaded === true) ? (
+        <AppContainer />
+      ) : (
+        AppLoading
+      )
+    );
+  }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+const switchNavigator = createSwitchNavigator({
+  LoginScreen: {screen: LoginScreen},
+  Drawer: {screen: AppDrawerNavigator},
+  BottomTab: {screen: AppTabNavigator}
 });
+
+const AppContainer = createAppContainer(switchNavigator);
